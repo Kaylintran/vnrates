@@ -3,8 +3,12 @@ import { fetchVCBRates } from "@/lib/ratesData";
 import { supabase } from "@/lib/supabase";
 
 export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const key = url.searchParams.get("key");
   const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const validKey = key === process.env.CRON_SECRET;
+  const validHeader = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+  if (!validKey && !validHeader) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
