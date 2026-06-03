@@ -83,8 +83,12 @@ export default function NewsSection() {
                 style={{ color: "var(--text)" }}
               >
                 {t("title1")}
-                <br />
-                <span style={{ color: "var(--green)" }}>{t("title2")}</span>
+                {t("title2") && (
+                  <>
+                    <br />
+                    <span style={{ color: "var(--green)" }}>{t("title2")}</span>
+                  </>
+                )}
               </h2>
             </FadeIn>
           </div>
