@@ -18,48 +18,58 @@ function dateSeed(date: string): number {
   return trend + noise;
 }
 
-export function buildMockRates(date: string): ExchangeRate[] {
+// Other banks expressed as VND offsets from VCB USD base
+const BANK_OFFSETS = [
+  { code: "VCB",  name: "Vietcombank", buyOffset: 0,   sellOffset: 0   },
+  { code: "BIDV", name: "BIDV",        buyOffset: -20,  sellOffset: 10  },
+  { code: "VTB",  name: "Vietinbank",  buyOffset: -30,  sellOffset: 5   },
+  { code: "TCB",  name: "Techcombank", buyOffset: -50,  sellOffset: 30  },
+  { code: "ACB",  name: "ACB",         buyOffset: 10,   sellOffset: -10 },
+  { code: "MBB",  name: "MB Bank",     buyOffset: -10,  sellOffset: 20  },
+  { code: "VPB",  name: "VPBank",      buyOffset: -40,  sellOffset: 40  },
+  { code: "TPB",  name: "TPBank",      buyOffset: -60,  sellOffset: 45  },
+  { code: "STB",  name: "Sacombank",   buyOffset: -15,  sellOffset: 15  },
+  { code: "EIB",  name: "Eximbank",    buyOffset: -25,  sellOffset: 25  },
+];
+
+// Ratios relative to USD (buy ratio, sell ratio) — calibrated from VCB 03/06/2026
+const CURRENCY_RATIOS: Record<string, [number, number]> = {
+  USD: [1,       1      ],
+  EUR: [1.1437,  1.1899 ],
+  JPY: [0.006093,0.006403],
+  KRW: [0.000575,0.000685],
+  CNY: [0.1455,  0.1499 ],
+  GBP: [1.3242,  1.3641 ],
+  AUD: [0.7060,  0.7274 ],
+  SGD: [0.7682,  0.7930 ],
+  HKD: [0.1252,  0.1297 ],
+  THB: [0.02725, 0.03119],
+  CAD: [0.7108,  0.7323 ],
+  CHF: [1.2492,  1.2869 ],
+};
+
+const SMALL_CURRENCIES = new Set(["JPY", "KRW", "THB"]);
+
+export function buildMockRates(
+  date: string,
+  vcbUsdBuy = 26100,
+  vcbUsdSell = 26400
+): ExchangeRate[] {
   const v = dateSeed(date);
-  const banks = [
-    { code: "VCB", name: "Vietcombank", usdBuy: Math.round(25100 * (1 + v)), usdSell: Math.round(25450 * (1 + v)) },
-    { code: "BIDV", name: "BIDV", usdBuy: Math.round(25080 * (1 + v)), usdSell: Math.round(25460 * (1 + v)) },
-    { code: "VTB", name: "Vietinbank", usdBuy: Math.round(25070 * (1 + v)), usdSell: Math.round(25455 * (1 + v)) },
-    { code: "TCB", name: "Techcombank", usdBuy: Math.round(25050 * (1 + v)), usdSell: Math.round(25480 * (1 + v)) },
-    { code: "ACB", name: "ACB", usdBuy: Math.round(25110 * (1 + v)), usdSell: Math.round(25440 * (1 + v)) },
-    { code: "MBB", name: "MB Bank", usdBuy: Math.round(25090 * (1 + v)), usdSell: Math.round(25470 * (1 + v)) },
-    { code: "VPB", name: "VPBank", usdBuy: Math.round(25060 * (1 + v)), usdSell: Math.round(25490 * (1 + v)) },
-    { code: "TPB", name: "TPBank", usdBuy: Math.round(25040 * (1 + v)), usdSell: Math.round(25495 * (1 + v)) },
-    { code: "STB", name: "Sacombank", usdBuy: Math.round(25085 * (1 + v)), usdSell: Math.round(25465 * (1 + v)) },
-    { code: "EIB", name: "Eximbank", usdBuy: Math.round(25075 * (1 + v)), usdSell: Math.round(25475 * (1 + v)) },
-  ];
-
-  const ratios: Record<string, [number, number]> = {
-    USD: [1, 1],
-    EUR: [1.0698, 1.0981],
-    JPY: [0.00651, 0.0068],
-    KRW: [0.000711, 0.000757],
-    CNY: [0.1375, 0.1407],
-    GBP: [1.244, 1.2892],
-    AUD: [0.6404, 0.6637],
-    SGD: [0.7338, 0.762],
-    HKD: [0.1253, 0.1309],
-    THB: [0.0268, 0.0278],
-    CAD: [0.7181, 0.745],
-    CHF: [1.0802, 1.1093],
-  };
-
-  const smallCurrencies = new Set(["JPY", "KRW", "THB"]);
   const rates: ExchangeRate[] = [];
 
-  for (const bank of banks) {
-    for (const [currency, [buyRatio, sellRatio]] of Object.entries(ratios)) {
-      const mult = smallCurrencies.has(currency) ? 100 : 1;
+  for (const bank of BANK_OFFSETS) {
+    const usdBuy  = Math.round((vcbUsdBuy  + bank.buyOffset)  * (1 + v));
+    const usdSell = Math.round((vcbUsdSell + bank.sellOffset) * (1 + v));
+
+    for (const [currency, [buyRatio, sellRatio]] of Object.entries(CURRENCY_RATIOS)) {
+      const mult = SMALL_CURRENCIES.has(currency) ? 100 : 1;
       rates.push({
         bankCode: bank.code,
         bankName: bank.name,
         currency,
-        buyRate: Math.round(bank.usdBuy * buyRatio * mult) / mult,
-        sellRate: Math.round(bank.usdSell * sellRatio * mult) / mult,
+        buyRate:  Math.round(usdBuy  * buyRatio  * mult) / mult,
+        sellRate: Math.round(usdSell * sellRatio * mult) / mult,
         transferRate: null,
         updatedAt: new Date().toISOString(),
         date,
@@ -71,34 +81,45 @@ export function buildMockRates(date: string): ExchangeRate[] {
 
 export async function fetchVCBRates(date: string): Promise<ExchangeRate[]> {
   try {
-    const res = await fetch(
-      "https://portal.vietcombank.com.vn/Usercontrols/TVPortal.TVExchageRate/pXML.aspx?b=10",
-      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
-    );
-    if (!res.ok) throw new Error("VCB API error");
-    const xml = await res.text();
+    const today = new Date().toISOString().split("T")[0];
+    // VCB API accepts DD/MM/YYYY; empty string = today
+    const dateParam = date === today ? "" : date.split("-").reverse().join("/");
 
-    const rates: ExchangeRate[] = [];
-    const regex =
-      /<Exrate\s+CurrencyCode="([^"]+)"\s+CurrencyName="([^"]+)"\s+Buy="([^"]+)"\s+Transfer="([^"]+)"\s+Sell="([^"]+)"/g;
-    let match;
-    while ((match = regex.exec(xml)) !== null) {
-      const [, code, , buy, transfer, sell] = match;
-      const parse = (s: string) => {
-        const n = parseFloat(s.replace(/,/g, ""));
-        return isNaN(n) ? null : n;
-      };
-      rates.push({
-        bankCode: "VCB",
-        bankName: "Vietcombank",
-        currency: code.trim(),
-        buyRate: parse(buy),
-        sellRate: parse(sell),
-        transferRate: parse(transfer),
-        updatedAt: new Date().toISOString(),
-        date,
-      });
-    }
+    const res = await fetch(
+      `https://www.vietcombank.com.vn/api/exchangerates?date=${dateParam}`,
+      {
+        next: { revalidate: 3600 },
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+          "Referer": "https://www.vietcombank.com.vn/",
+          "Accept": "application/json",
+        },
+      }
+    );
+    if (!res.ok) throw new Error(`VCB API error: ${res.status}`);
+
+    const json = await res.json() as {
+      UpdatedDate: string;
+      Data: Array<{ currencyCode: string; cash: string; transfer: string; sell: string }>;
+    };
+
+    const parse = (s: string): number | null => {
+      const n = parseFloat(s);
+      return isNaN(n) || n === 0 ? null : n;
+    };
+
+    const rates: ExchangeRate[] = (json.Data ?? []).map((item) => ({
+      bankCode: "VCB",
+      bankName: "Vietcombank",
+      currency: item.currencyCode,
+      buyRate: parse(item.cash),
+      sellRate: parse(item.sell),
+      transferRate: parse(item.transfer),
+      updatedAt: json.UpdatedDate ?? new Date().toISOString(),
+      date,
+    }));
+
     return rates.length > 0 ? rates : buildMockRates(date).filter((r) => r.bankCode === "VCB");
   } catch {
     return buildMockRates(date).filter((r) => r.bankCode === "VCB");
@@ -107,10 +128,15 @@ export async function fetchVCBRates(date: string): Promise<ExchangeRate[]> {
 
 export async function getAllRates() {
   const date = new Date().toISOString().split("T")[0];
-  const [vcbRates, mockRates] = await Promise.all([
-    fetchVCBRates(date),
-    Promise.resolve(buildMockRates(date).filter((r) => r.bankCode !== "VCB")),
-  ]);
+  const vcbRates = await fetchVCBRates(date);
+
+  // Anchor other bank mock rates to real VCB USD rate
+  const vcbUSD = vcbRates.find((r) => r.currency === "USD");
+  const usdBuy  = vcbUSD?.buyRate  ?? 26100;
+  const usdSell = vcbUSD?.sellRate ?? 26400;
+
+  const mockRates = buildMockRates(date, usdBuy, usdSell).filter((r) => r.bankCode !== "VCB");
+
   return {
     date,
     rates: [...vcbRates, ...mockRates],
@@ -121,14 +147,18 @@ export async function getAllRates() {
 export async function getRatesForDate(date: string) {
   const today = new Date().toISOString().split("T")[0];
   if (date === today) return getAllRates();
-  const rates = buildMockRates(date);
-  return { date, rates, updatedAt: `${date}T12:00:00.000Z` };
+
+  const vcbRates = await fetchVCBRates(date);
+  const vcbUSD  = vcbRates.find((r) => r.currency === "USD");
+  const usdBuy  = vcbUSD?.buyRate  ?? 26100;
+  const usdSell = vcbUSD?.sellRate ?? 26400;
+
+  const mockRates = buildMockRates(date, usdBuy, usdSell).filter((r) => r.bankCode !== "VCB");
+  return { date, rates: [...vcbRates, ...mockRates], updatedAt: `${date}T12:00:00.000Z` };
 }
 
-// Re-export for backward compat with existing imports
 export { BM_CURRENCIES } from "@/lib/blackMarketConfig";
 
-// Deterministic daily variation: returns an absolute VND offset in range [-variation, +variation]
 function bmAbsVariation(currency: string, date: string, variation: number): number {
   if (variation === 0) return 0;
   const epoch = Math.floor(new Date(date + "T00:00:00Z").getTime() / 86400000);
@@ -139,23 +169,24 @@ function bmAbsVariation(currency: string, date: string, variation: number): numb
     h = ((h << 5) + h) ^ str.charCodeAt(i);
   }
   const noise = (((h >>> 0) % 10000) / 10000) - 0.5;
-  const combined = trend * 0.4 + noise * 0.6; // roughly -0.58 to +0.58
+  const combined = trend * 0.4 + noise * 0.6;
   const isSmall = currency === "JPY" || currency === "KRW";
   const raw = combined * variation;
   return isSmall ? Math.round(raw * 100) / 100 : Math.round(raw);
 }
 
-// Compute BM rates from a set of VCB rates + the user-configured spread formula
 export function computeBMRates(vcbRates: ExchangeRate[], date: string): BMRate[] {
-  // Fallback to mock VCB rates if a currency is missing in vcbRates
-  const mockVCB = buildMockRates(date).filter((r) => r.bankCode === "VCB");
+  const vcbUSD  = vcbRates.find((r) => r.bankCode === "VCB" && r.currency === "USD");
+  const usdBuy  = vcbUSD?.buyRate  ?? 26100;
+  const usdSell = vcbUSD?.sellRate ?? 26400;
+  const mockVCB = buildMockRates(date, usdBuy, usdSell).filter((r) => r.bankCode === "VCB");
 
   return BM_CURRENCIES.map((currency) => {
     const config = BM_SPREAD_CONFIG[currency];
     const vcb =
       vcbRates.find((r) => r.bankCode === "VCB" && r.currency === currency) ??
       mockVCB.find((r) => r.currency === currency);
-    const vcbBuy = vcb?.buyRate ?? null;
+    const vcbBuy  = vcb?.buyRate  ?? null;
     const vcbSell = vcb?.sellRate ?? null;
     const variation = bmAbsVariation(currency, date, config.variation);
     const isSmall = currency === "JPY" || currency === "KRW";
@@ -163,7 +194,7 @@ export function computeBMRates(vcbRates: ExchangeRate[], date: string): BMRate[]
 
     return {
       currency,
-      buy: vcbBuy !== null ? round(vcbBuy + config.buySpread + variation) : null,
+      buy:  vcbBuy  !== null ? round(vcbBuy  + config.buySpread  + variation) : null,
       sell: vcbSell !== null ? round(vcbSell + config.sellSpread + variation) : null,
       vcbBuy,
       vcbSell,
@@ -183,16 +214,13 @@ export function getBlackMarketHistoricalData(currency: string, days: number): Hi
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const date = d.toISOString().split("T")[0];
-
-    // Use mock VCB rate as the historical baseline (real historical VCB not available)
     const mockVCB = buildMockRates(date).find((r) => r.bankCode === "VCB" && r.currency === currency);
-    const vcbBuy = mockVCB?.buyRate ?? null;
+    const vcbBuy  = mockVCB?.buyRate  ?? null;
     const vcbSell = mockVCB?.sellRate ?? null;
     const variation = bmAbsVariation(currency, date, config.variation);
-
     result.push({
       date,
-      buyRate: vcbBuy !== null ? round(vcbBuy + config.buySpread + variation) : null,
+      buyRate:  vcbBuy  !== null ? round(vcbBuy  + config.buySpread  + variation) : null,
       sellRate: vcbSell !== null ? round(vcbSell + config.sellSpread + variation) : null,
     });
   }
