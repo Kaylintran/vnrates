@@ -134,6 +134,8 @@
     "tagRate": "汇率",
     "tagBank": "银行",
     "tagAnalysis": "分析",
+    "tagAll": "全部",
+    "noArticles": "暂无文章。",
     "backLink": "← 新闻",
     "relatedTitle": "相关新闻"
   },

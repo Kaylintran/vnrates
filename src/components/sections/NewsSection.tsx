@@ -1,10 +1,11 @@
-﻿"use client";
+"use client";
 
-import { useTranslations, useLocale } from "next-intl";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import FadeIn from "@/components/ui/FadeIn";
 import { NEWS_ARTICLES } from "@/lib/news";
-import type { NewsArticle } from "@/types";
+import type { FetchedNewsItem } from "@/types";
 
 const TAG_COLORS: Record<string, { color: string; bg: string }> = {
   rate: { color: "var(--blue)", bg: "rgba(59,130,246,0.12)" },
@@ -12,19 +13,12 @@ const TAG_COLORS: Record<string, { color: string; bg: string }> = {
   analysis: { color: "var(--gold)", bg: "rgba(245,158,11,0.12)" },
 };
 
-function getTitle(article: NewsArticle, locale: string): string {
-  if (locale === "ko") return article.titleKo;
-  if (locale === "zh-CN") return article.titleZhCN;
-  if (locale === "zh-TW") return article.titleZhTW;
-  return article.titleVi;
-}
-
 function Sparkline({
   data,
-  trend,
+  dir,
 }: {
   data: number[];
-  trend: "up" | "down" | "neutral";
+  dir: "up" | "down" | "neutral";
 }) {
   if (data.length < 2) return null;
   const min = Math.min(...data);
@@ -38,7 +32,7 @@ function Sparkline({
     return `${x},${y}`;
   });
   const color =
-    trend === "up" ? "var(--green)" : trend === "down" ? "var(--red)" : "var(--text-3)";
+    dir === "up" ? "var(--green)" : dir === "down" ? "var(--red)" : "var(--text-3)";
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
       <polyline
@@ -63,9 +57,57 @@ function Sparkline({
   );
 }
 
+// Convert static hardcoded articles to FetchedNewsItem format as fallback
+function staticToFetched(locale: string): FetchedNewsItem[] {
+  return NEWS_ARTICLES.map((a) => ({
+    id: a.id,
+    title:
+      locale === "ko"
+        ? a.titleKo
+        : locale === "zh-CN"
+        ? a.titleZhCN
+        : locale === "zh-TW"
+        ? a.titleZhTW
+        : a.titleVi,
+    summary: a.summaryVi,
+    link: `/news/${a.slug}`,
+    publishedAt: a.publishedAt,
+    source: "Static",
+    tag: a.tag,
+    trendData: a.trendData,
+    trendDir: a.trend,
+  }));
+}
+
 export default function NewsSection() {
   const t = useTranslations("news");
-  const locale = useLocale();
+  const [articles, setArticles] = useState<FetchedNewsItem[]>([]);
+  const [locale, setLocale] = useState("vi");
+
+  useEffect(() => {
+    const detectedLocale =
+      typeof window !== "undefined"
+        ? window.location.pathname.split("/")[1] || "vi"
+        : "vi";
+    setLocale(detectedLocale);
+
+    fetch("/api/news")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.articles?.length > 0) {
+          setArticles(data.articles.slice(0, 6));
+        } else {
+          setArticles(staticToFetched(detectedLocale).slice(0, 6));
+        }
+      })
+      .catch(() => {
+        setArticles(staticToFetched(detectedLocale).slice(0, 6));
+      });
+  }, []);
+
+  // Show static articles while loading (SSR-safe)
+  const displayArticles =
+    articles.length > 0 ? articles : staticToFetched("vi").slice(0, 6);
 
   return (
     <section className="py-16 md:py-32" style={{ backgroundColor: "var(--surface)" }}>
@@ -73,7 +115,10 @@ export default function NewsSection() {
         <div className="flex items-end justify-between mb-12">
           <div>
             <FadeIn>
-              <span className="text-xs uppercase tracking-widest" style={{ color: "var(--text-3)" }}>
+              <span
+                className="text-xs uppercase tracking-widest"
+                style={{ color: "var(--text-3)" }}
+              >
                 {t("label")}
               </span>
             </FadeIn>
@@ -104,63 +149,110 @@ export default function NewsSection() {
                 ((e.currentTarget as HTMLAnchorElement).style.color = "var(--text-2)")
               }
             >
-              {t("viewAll")} â†’
+              {t("viewAll")} →
             </Link>
           </FadeIn>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {NEWS_ARTICLES.map((article, i) => {
+          {displayArticles.map((article, i) => {
             const tag = TAG_COLORS[article.tag] ?? TAG_COLORS.rate;
-            const tagLabel = t(`tag${article.tag.charAt(0).toUpperCase() + article.tag.slice(1)}` as Parameters<typeof t>[0]);
+            const tagLabel =
+              article.tag === "bank"
+                ? t("tagBank")
+                : article.tag === "analysis"
+                ? t("tagAnalysis")
+                : t("tagRate");
+            const isExternal = article.link.startsWith("http");
+
             return (
               <FadeIn key={article.id} delay={0.06 * (i % 6)}>
-                <Link href={`/news/${article.slug}`}>
-                  <article
-                    className="rounded-2xl border p-6 h-full flex flex-col gap-4 transition-colors"
-                    style={{
-                      backgroundColor: "var(--bg)",
-                      borderColor: "var(--border)",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(255,255,255,0.025)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg)";
-                    }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span
-                        className="text-xs px-2 py-0.5 rounded font-medium"
-                        style={{ color: tag.color, backgroundColor: tag.bg }}
-                      >
-                        {tagLabel}
-                      </span>
-                      <Sparkline data={article.trendData} trend={article.trend} />
-                    </div>
-                    <div className="flex-1">
-                      <h3
-                        className="text-sm font-medium leading-snug"
-                        style={{ color: "var(--text)" }}
-                      >
-                        {getTitle(article, locale)}
-                      </h3>
-                    </div>
-                    <div className="flex items-center justify-between text-xs" style={{ color: "var(--text-3)" }}>
-                      <span>
-                        {new Date(article.publishedAt).toLocaleDateString("vi-VN")}
-                      </span>
-                      <span>
-                        {article.readMinutes} {t("readMin")}
-                      </span>
-                    </div>
-                  </article>
-                </Link>
+                {isExternal ? (
+                  <a href={article.link} target="_blank" rel="noopener noreferrer">
+                    <ArticleCard
+                      article={article}
+                      tag={tag}
+                      tagLabel={tagLabel}
+                      readMin={t("readMin")}
+                    />
+                  </a>
+                ) : (
+                  <Link href={article.link}>
+                    <ArticleCard
+                      article={article}
+                      tag={tag}
+                      tagLabel={tagLabel}
+                      readMin={t("readMin")}
+                    />
+                  </Link>
+                )}
               </FadeIn>
             );
           })}
         </div>
       </div>
     </section>
+  );
+}
+
+function ArticleCard({
+  article,
+  tag,
+  tagLabel,
+  readMin,
+}: {
+  article: FetchedNewsItem;
+  tag: { color: string; bg: string };
+  tagLabel: string;
+  readMin: string;
+}) {
+  return (
+    <article
+      className="rounded-2xl border p-6 h-full flex flex-col gap-4 transition-colors"
+      style={{ backgroundColor: "var(--bg)", borderColor: "var(--border)" }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor =
+          "rgba(255,255,255,0.025)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.backgroundColor = "var(--bg)";
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <span
+          className="text-xs px-2 py-0.5 rounded font-medium"
+          style={{ color: tag.color, backgroundColor: tag.bg }}
+        >
+          {tagLabel}
+        </span>
+        <div className="flex items-center gap-2">
+          {article.source !== "Static" && (
+            <span className="text-xs" style={{ color: "var(--text-3)" }}>
+              {article.source}
+            </span>
+          )}
+          <Sparkline data={article.trendData} dir={article.trendDir} />
+        </div>
+      </div>
+      <div className="flex-1">
+        <h3
+          className="text-sm font-medium leading-snug"
+          style={{ color: "var(--text)" }}
+        >
+          {article.title}
+        </h3>
+      </div>
+      <div
+        className="flex items-center justify-between text-xs"
+        style={{ color: "var(--text-3)" }}
+      >
+        <span>{new Date(article.publishedAt).toLocaleDateString("vi-VN")}</span>
+        {article.source === "Static" && (
+          <span>
+            3 {readMin}
+          </span>
+        )}
+      </div>
+    </article>
   );
 }

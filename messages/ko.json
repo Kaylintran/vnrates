@@ -134,6 +134,8 @@
     "tagRate": "환율",
     "tagBank": "은행",
     "tagAnalysis": "분석",
+    "tagAll": "전체",
+    "noArticles": "게시물이 없습니다.",
     "backLink": "← 뉴스",
     "relatedTitle": "관련 뉴스"
   },

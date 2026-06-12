@@ -37,6 +37,18 @@ export interface NewsArticle {
 
 export type SupportedLocale = "vi" | "ko" | "zh-CN" | "zh-TW";
 
+export interface FetchedNewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  link: string;
+  publishedAt: string;
+  source: string;
+  tag: "rate" | "bank" | "analysis";
+  trendData: number[];
+  trendDir: "up" | "down" | "neutral";
+}
+
 export interface BankInfo {
   code: string;
   name: string;
