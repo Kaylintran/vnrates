@@ -44,7 +44,7 @@ export default function Header() {
             className="font-semibold text-base tracking-tight"
             style={{ color: "var(--text)" }}
           >
-            vnrates
+            rateviet
           </span>
         </Link>
 

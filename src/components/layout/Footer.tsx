@@ -18,7 +18,7 @@ export default function Footer() {
             style={{ backgroundColor: "var(--green)" }}
           />
           <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
-            vnrates
+            rateviet
           </span>
           <span className="text-xs" style={{ color: "var(--text-3)" }}>
             · {t("copy")}
