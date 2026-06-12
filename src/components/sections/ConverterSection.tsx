@@ -1,10 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowLeftRight, CheckCircle2 } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
-import { fmtRate } from "@/lib/utils";
 import { CURRENCIES } from "@/lib/currencies";
 import type { ExchangeRate } from "@/types";
 
@@ -54,8 +53,8 @@ function convertAmount(
 }
 
 const ALL_CURRENCIES = [
-  { code: "VND", label: "VND â€” Äá»“ng Viá»‡t Nam" },
-  ...CURRENCIES.map((c) => ({ code: c.code, label: `${c.code} â€” ${c.nameVi}` })),
+  { code: "VND", label: "VND – Đồng Việt Nam" },
+  ...CURRENCIES.map((c) => ({ code: c.code, label: `${c.code} – ${c.nameVi}` })),
 ];
 
 export default function ConverterSection({ rates }: ConverterSectionProps) {
@@ -73,7 +72,7 @@ export default function ConverterSection({ rates }: ConverterSectionProps) {
   const result = convertAmount(parsed, from, to, rates);
 
   const formatResult = (n: number | null) => {
-    if (n === null) return "â€”";
+    if (n === null) return "–";
     if (n > 1000) return Math.round(n).toLocaleString("en-US");
     return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
   };
@@ -164,7 +163,7 @@ export default function ConverterSection({ rates }: ConverterSectionProps) {
               <div className="flex items-center gap-3">
                 <div className="flex-1">
                   <label className="block text-xs mb-2" style={{ color: "var(--text-3)" }}>
-                    Tá»«
+                    Từ
                   </label>
                   <select
                     value={from}
@@ -233,7 +232,7 @@ export default function ConverterSection({ rates }: ConverterSectionProps) {
                   {result.buy !== null && (
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs" style={{ color: "var(--text-3)" }}>
-                        Mua vÃ o
+                        Mua vào
                       </span>
                       <span
                         className="text-2xl font-semibold mono"
@@ -247,7 +246,7 @@ export default function ConverterSection({ rates }: ConverterSectionProps) {
                   {result.sell !== null && (
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs" style={{ color: "var(--text-3)" }}>
-                        BÃ¡n ra
+                        Bán ra
                       </span>
                       <span
                         className="text-2xl font-semibold mono"
@@ -260,12 +259,12 @@ export default function ConverterSection({ rates }: ConverterSectionProps) {
                   )}
                   {result.buy === null && result.sell === null && (
                     <span className="text-sm" style={{ color: "var(--text-3)" }}>
-                      â€”
+                      –
                     </span>
                   )}
                 </div>
                 <div className="mt-3 pt-3 border-t text-xs" style={{ borderColor: "var(--border)", color: "var(--text-3)" }}>
-                  Nguá»“n: {t("rateSource")} Â· {new Date().toLocaleDateString("vi-VN")}
+                  Nguồn: {t("rateSource")} · {new Date().toLocaleDateString("vi-VN")}
                 </div>
               </div>
             </div>

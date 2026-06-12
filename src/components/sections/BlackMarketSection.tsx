@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTranslations } from "next-intl";
 import { AlertTriangle } from "lucide-react";
@@ -89,7 +89,7 @@ export default function BlackMarketSection({ rates }: BlackMarketSectionProps) {
                       className="text-left px-6 py-3 text-xs uppercase tracking-wider font-medium"
                       style={{ color: "var(--text-3)" }}
                     >
-                      Tiá»n tá»‡
+                      Tiền tệ
                     </th>
                     <th
                       className="text-right px-6 py-3 text-xs uppercase tracking-wider font-medium"
@@ -149,7 +149,7 @@ export default function BlackMarketSection({ rates }: BlackMarketSectionProps) {
               <div className="space-y-4">
                 <div>
                   <div className="text-xs mb-1" style={{ color: "var(--text-3)" }}>
-                    ChÃªnh lá»‡ch mua
+                    Chênh lệch mua
                   </div>
                   <div
                     className="text-2xl font-semibold mono"
@@ -158,7 +158,7 @@ export default function BlackMarketSection({ rates }: BlackMarketSectionProps) {
                     +{fmtRate(buyDiff)}
                   </div>
                   <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>
-                    VCB: {fmtRate(vcbUsdBuy)} Â· Chá»£ Ä‘en: {fmtRate(bmUsd.buy)}
+                    VCB: {fmtRate(vcbUsdBuy)} · Chợ đen: {fmtRate(bmUsd.buy)}
                   </div>
                 </div>
                 <div
@@ -166,7 +166,7 @@ export default function BlackMarketSection({ rates }: BlackMarketSectionProps) {
                   style={{ borderColor: "rgba(245,158,11,0.2)" }}
                 >
                   <div className="text-xs mb-1" style={{ color: "var(--text-3)" }}>
-                    ChÃªnh lá»‡ch bÃ¡n
+                    Chênh lệch bán
                   </div>
                   <div
                     className="text-2xl font-semibold mono"
@@ -175,7 +175,7 @@ export default function BlackMarketSection({ rates }: BlackMarketSectionProps) {
                     +{fmtRate(sellDiff)}
                   </div>
                   <div className="text-xs mt-0.5" style={{ color: "var(--text-3)" }}>
-                    VCB: {fmtRate(vcbUsdSell)} Â· Chá»£ Ä‘en: {fmtRate(bmUsd.sell)}
+                    VCB: {fmtRate(vcbUsdSell)} · Chợ đen: {fmtRate(bmUsd.sell)}
                   </div>
                 </div>
               </div>

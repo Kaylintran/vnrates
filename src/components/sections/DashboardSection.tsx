@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -101,13 +101,13 @@ export default function DashboardSection({ rates }: DashboardSectionProps) {
                     className="text-right px-6 py-4 text-xs uppercase tracking-wider font-medium"
                     style={{ color: "var(--text-3)" }}
                   >
-                    BÃ¡n
+                    Bán
                   </th>
                   <th
                     className="text-right px-6 py-4 text-xs uppercase tracking-wider font-medium hidden sm:table-cell"
                     style={{ color: "var(--text-3)" }}
                   >
-                    Chuyá»ƒn
+                    Chuyển
                   </th>
                 </tr>
               </thead>
