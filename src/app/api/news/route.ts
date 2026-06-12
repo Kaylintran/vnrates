@@ -15,9 +15,9 @@ export interface FetchedNewsItem {
 }
 
 const RSS_FEEDS = [
-  { url: "https://cafef.vn/rss/thi-truong-tien-te.rss", source: "CafeF" },
-  { url: "https://cafef.vn/rss/ngan-hang.rss", source: "CafeF" },
-  { url: "https://vnexpress.net/rss/kinh-doanh/quoc-te.rss", source: "VnExpress" },
+  { url: "https://cafef.vn/tai-chinh-ngan-hang.rss", source: "CafeF" },
+  { url: "https://cafef.vn/tai-chinh-quoc-te.rss", source: "CafeF" },
+  { url: "https://vnexpress.net/rss/kinh-doanh.rss", source: "VnExpress" },
 ];
 
 function detectTag(text: string): "rate" | "bank" | "analysis" {
