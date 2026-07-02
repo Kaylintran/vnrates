@@ -7,6 +7,7 @@ export interface ExchangeRate {
   transferRate: number | null;
   updatedAt: string;
   date: string;
+  source: "live" | "estimated";
 }
 
 export interface BlackMarketRate {
