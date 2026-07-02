@@ -11,7 +11,7 @@ interface SnapshotRow {
   sell_moderate: number | null;
   sell_high: number | null;
   sell_avg: number | null;
-  vcb_usd_rate: number | null;
+  vcb_aud_rate: number | null;
 }
 
 const STAT_KEYS = ["low", "moderate", "high", "avg"] as const;
@@ -19,14 +19,14 @@ type StatKey = (typeof STAT_KEYS)[number];
 
 function ratioFor(row: SnapshotRow, side: "buy" | "sell", key: StatKey): number | null {
   const price = row[`${side}_${key}`];
-  if (price === null || !row.vcb_usd_rate) return null;
-  return price / row.vcb_usd_rate;
+  if (price === null || !row.vcb_aud_rate) return null;
+  return price / row.vcb_aud_rate;
 }
 
 export async function GET() {
   const { data, error } = await supabase
     .from("usdt_p2p_snapshots")
-    .select("collected_at, buy_low, buy_moderate, buy_high, buy_avg, sell_low, sell_moderate, sell_high, sell_avg, vcb_usd_rate")
+    .select("collected_at, buy_low, buy_moderate, buy_high, buy_avg, sell_low, sell_moderate, sell_high, sell_avg, vcb_aud_rate")
     .order("collected_at", { ascending: false })
     .limit(8);
 
@@ -56,7 +56,7 @@ export async function GET() {
 
     return {
       collectedAt: row.collected_at,
-      vcbUsdRate: row.vcb_usd_rate,
+      vcbAudRate: row.vcb_aud_rate,
       buy: buildSide("buy"),
       sell: buildSide("sell"),
     };
