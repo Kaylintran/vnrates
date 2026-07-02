@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { AlertTriangle } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
@@ -29,7 +29,7 @@ function fmtRatio(n: number | null): string {
 }
 
 function fmtVariance(n: number | null): { text: string; color: string } {
-  if (n === null) return { text: "—", color: "var(--text-3)" };
+  if (n === null) return { text: "", color: "var(--text-3)" };
   const sign = n >= 0 ? "+" : "";
   return {
     text: `${sign}${n.toFixed(2)}%`,
@@ -79,11 +79,11 @@ export default function CryptoPage() {
           {groupLabel}
         </h3>
         <div className="rounded-2xl border overflow-x-auto" style={{ borderColor: "var(--border)" }}>
-          <table className="w-full text-sm min-w-[720px]">
+          <table className="w-full text-sm">
             <thead>
               <tr style={{ backgroundColor: tint }}>
                 <th
-                  className="text-left px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap"
+                  className="text-left px-2 py-3 text-[11px] uppercase tracking-wide font-medium whitespace-nowrap"
                   style={{ color: "var(--text-3)" }}
                 >
                   {t("colTime")}
@@ -91,27 +91,20 @@ export default function CryptoPage() {
                 {order.map((key) => (
                   <th
                     key={`price-${key}`}
-                    className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap"
+                    className="text-right px-2 py-3 text-[11px] uppercase tracking-wide font-medium"
                     style={{ color }}
                   >
                     {statLabel[key]}
                   </th>
                 ))}
                 {order.map((key) => (
-                  <Fragment key={`ratio-group-${key}`}>
-                    <th
-                      className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap hidden lg:table-cell"
-                      style={{ color: "var(--text-3)" }}
-                    >
-                      {t("colRatio")} {statLabel[key]}
-                    </th>
-                    <th
-                      className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap hidden lg:table-cell"
-                      style={{ color: "var(--text-3)" }}
-                    >
-                      {t("colVariance")}
-                    </th>
-                  </Fragment>
+                  <th
+                    key={`ratio-${key}`}
+                    className="text-right px-2 py-3 text-[11px] uppercase tracking-wide font-medium leading-tight"
+                    style={{ color: "var(--text-3)" }}
+                  >
+                    {t("colRatio")} {statLabel[key]}
+                  </th>
                 ))}
               </tr>
             </thead>
@@ -127,31 +120,23 @@ export default function CryptoPage() {
                       backgroundColor: i % 2 === 1 ? "rgba(255,255,255,0.015)" : "transparent",
                     }}
                   >
-                    <td className="px-4 py-3 whitespace-nowrap" style={{ color: "var(--text-2)" }}>
+                    <td className="px-2 py-3 whitespace-nowrap text-xs" style={{ color: "var(--text-2)" }}>
                       {fmtTime(row.collectedAt)}
                     </td>
                     {order.map((key) => (
-                      <td key={`price-${key}`} className="px-4 py-3 text-right mono" style={{ color: "var(--text)" }}>
+                      <td key={`price-${key}`} className="px-2 py-3 text-right mono" style={{ color: "var(--text)" }}>
                         {fmtRate(block.stats[key])}
                       </td>
                     ))}
                     {order.map((key) => {
                       const variance = fmtVariance(block.variance[key]);
                       return (
-                        <Fragment key={`ratio-cell-${key}`}>
-                          <td
-                            className="px-4 py-3 text-right mono hidden lg:table-cell"
-                            style={{ color: "var(--text-2)" }}
-                          >
-                            {fmtRatio(block.ratios[key])}
-                          </td>
-                          <td
-                            className="px-4 py-3 text-right mono hidden lg:table-cell"
-                            style={{ color: variance.color }}
-                          >
-                            {variance.text}
-                          </td>
-                        </Fragment>
+                        <td key={`ratio-${key}`} className="px-2 py-3 text-right mono">
+                          <div style={{ color: "var(--text-2)" }}>{fmtRatio(block.ratios[key])}</div>
+                          {variance.text && (
+                            <div className="text-xs" style={{ color: variance.color }}>{variance.text}</div>
+                          )}
+                        </td>
                       );
                     })}
                   </tr>
