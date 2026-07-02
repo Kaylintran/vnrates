@@ -44,7 +44,7 @@ export async function GET(req: Request) {
   let usdtSaved = false;
   let usdtError: string | undefined;
   try {
-    const vcbUsdRate = rates.find((r) => r.bankCode === "VCB" && r.currency === "USD")?.sellRate ?? null;
+    const vcbAudRate = rates.find((r) => r.bankCode === "VCB" && r.currency === "AUD")?.sellRate ?? null;
     const snapshot = await fetchUSDTP2PSnapshot();
     const { error: usdtInsertError } = await supabase.from("usdt_p2p_snapshots").insert({
       buy_low: snapshot.buy.low,
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       sell_moderate: snapshot.sell.moderate,
       sell_high: snapshot.sell.high,
       sell_avg: snapshot.sell.average,
-      vcb_usd_rate: vcbUsdRate,
+      vcb_aud_rate: vcbAudRate,
     });
     if (usdtInsertError) throw new Error(usdtInsertError.message);
     usdtSaved = true;

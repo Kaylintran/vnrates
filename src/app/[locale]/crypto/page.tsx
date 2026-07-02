@@ -15,7 +15,7 @@ interface StatBlock {
 
 interface SnapshotRow {
   collectedAt: string;
-  vcbUsdRate: number | null;
+  vcbAudRate: number | null;
   buy: StatBlock;
   sell: StatBlock;
 }
