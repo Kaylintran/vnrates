@@ -65,66 +65,102 @@ export default function CryptoPage() {
       minute: "2-digit",
     }).format(new Date(iso));
 
-  function renderSide(order: readonly (keyof StatBlock["stats"])[], color: string) {
+  function renderSideTable(
+    side: "buy" | "sell",
+    order: readonly (keyof StatBlock["stats"])[],
+    color: string,
+    tint: string,
+    groupLabel: string,
+    delay: number
+  ) {
     return (
-      <>
-        {order.map((key) => (
-          <th
-            key={`price-${key}`}
-            className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap"
-            style={{ color }}
-          >
-            {statLabel[key]}
-          </th>
-        ))}
-        {order.map((key) => (
-          <Fragment key={`ratio-group-${key}`}>
-            <th
-              className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap hidden lg:table-cell"
-              style={{ color: "var(--text-3)" }}
-            >
-              {t("colRatio")} {statLabel[key]}
-            </th>
-            <th
-              className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap hidden lg:table-cell"
-              style={{ color: "var(--text-3)" }}
-            >
-              {t("colVariance")}
-            </th>
-          </Fragment>
-        ))}
-      </>
-    );
-  }
-
-  function renderSideCells(block: StatBlock, order: readonly (keyof StatBlock["stats"])[]) {
-    return (
-      <>
-        {order.map((key) => (
-          <td key={`price-${key}`} className="px-4 py-3 text-right mono" style={{ color: "var(--text)" }}>
-            {fmtRate(block.stats[key])}
-          </td>
-        ))}
-        {order.map((key) => {
-          const variance = fmtVariance(block.variance[key]);
-          return (
-            <Fragment key={`ratio-cell-${key}`}>
-              <td
-                className="px-4 py-3 text-right mono hidden lg:table-cell"
-                style={{ color: "var(--text-2)" }}
-              >
-                {fmtRatio(block.ratios[key])}
-              </td>
-              <td
-                className="px-4 py-3 text-right mono hidden lg:table-cell"
-                style={{ color: variance.color }}
-              >
-                {variance.text}
-              </td>
-            </Fragment>
-          );
-        })}
-      </>
+      <FadeIn delay={delay}>
+        <h3 className="text-sm font-medium mb-3" style={{ color }}>
+          {groupLabel}
+        </h3>
+        <div className="rounded-2xl border overflow-x-auto" style={{ borderColor: "var(--border)" }}>
+          <table className="w-full text-sm min-w-[720px]">
+            <thead>
+              <tr style={{ backgroundColor: tint }}>
+                <th
+                  className="text-left px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap"
+                  style={{ color: "var(--text-3)" }}
+                >
+                  {t("colTime")}
+                </th>
+                {order.map((key) => (
+                  <th
+                    key={`price-${key}`}
+                    className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap"
+                    style={{ color }}
+                  >
+                    {statLabel[key]}
+                  </th>
+                ))}
+                {order.map((key) => (
+                  <Fragment key={`ratio-group-${key}`}>
+                    <th
+                      className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap hidden lg:table-cell"
+                      style={{ color: "var(--text-3)" }}
+                    >
+                      {t("colRatio")} {statLabel[key]}
+                    </th>
+                    <th
+                      className="text-right px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap hidden lg:table-cell"
+                      style={{ color: "var(--text-3)" }}
+                    >
+                      {t("colVariance")}
+                    </th>
+                  </Fragment>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => {
+                const block = row[side];
+                return (
+                  <tr
+                    key={row.collectedAt}
+                    className="border-t"
+                    style={{
+                      borderColor: "var(--border)",
+                      backgroundColor: i % 2 === 1 ? "rgba(255,255,255,0.015)" : "transparent",
+                    }}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap" style={{ color: "var(--text-2)" }}>
+                      {fmtTime(row.collectedAt)}
+                    </td>
+                    {order.map((key) => (
+                      <td key={`price-${key}`} className="px-4 py-3 text-right mono" style={{ color: "var(--text)" }}>
+                        {fmtRate(block.stats[key])}
+                      </td>
+                    ))}
+                    {order.map((key) => {
+                      const variance = fmtVariance(block.variance[key]);
+                      return (
+                        <Fragment key={`ratio-cell-${key}`}>
+                          <td
+                            className="px-4 py-3 text-right mono hidden lg:table-cell"
+                            style={{ color: "var(--text-2)" }}
+                          >
+                            {fmtRatio(block.ratios[key])}
+                          </td>
+                          <td
+                            className="px-4 py-3 text-right mono hidden lg:table-cell"
+                            style={{ color: variance.color }}
+                          >
+                            {variance.text}
+                          </td>
+                        </Fragment>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </FadeIn>
     );
   }
 
@@ -174,60 +210,10 @@ export default function CryptoPage() {
           ) : rows.length === 0 ? (
             <p className="text-sm" style={{ color: "var(--text-3)" }}>{t("noData")}</p>
           ) : (
-            <FadeIn delay={0.08}>
-              <div className="rounded-2xl border overflow-x-auto" style={{ borderColor: "var(--border)" }}>
-                <table className="w-full text-sm min-w-[1100px]">
-                  <thead>
-                    <tr style={{ backgroundColor: "var(--surface)" }}>
-                      <th
-                        rowSpan={1}
-                        className="text-left px-4 py-3 text-xs uppercase tracking-wider font-medium whitespace-nowrap"
-                        style={{ color: "var(--text-3)" }}
-                      >
-                        {t("colTime")}
-                      </th>
-                      <th
-                        colSpan={BUY_ORDER.length * 3}
-                        className="text-center px-4 py-2 text-xs uppercase tracking-wider font-semibold"
-                        style={{ color: "var(--green)", backgroundColor: "rgba(34,197,94,0.06)" }}
-                      >
-                        {t("groupBuy")}
-                      </th>
-                      <th
-                        colSpan={SELL_ORDER.length * 3}
-                        className="text-center px-4 py-2 text-xs uppercase tracking-wider font-semibold"
-                        style={{ color: "var(--red)", backgroundColor: "rgba(239,68,68,0.06)" }}
-                      >
-                        {t("groupSell")}
-                      </th>
-                    </tr>
-                    <tr style={{ backgroundColor: "var(--surface)" }}>
-                      <th />
-                      {renderSide(BUY_ORDER, "var(--green)")}
-                      {renderSide(SELL_ORDER, "var(--red)")}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((row, i) => (
-                      <tr
-                        key={row.collectedAt}
-                        className="border-t"
-                        style={{
-                          borderColor: "var(--border)",
-                          backgroundColor: i % 2 === 1 ? "rgba(255,255,255,0.015)" : "transparent",
-                        }}
-                      >
-                        <td className="px-4 py-3 whitespace-nowrap" style={{ color: "var(--text-2)" }}>
-                          {fmtTime(row.collectedAt)}
-                        </td>
-                        {renderSideCells(row.buy, BUY_ORDER)}
-                        {renderSideCells(row.sell, SELL_ORDER)}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </FadeIn>
+            <div className="space-y-8">
+              {renderSideTable("buy", BUY_ORDER, "var(--green)", "rgba(34,197,94,0.06)", t("groupBuy"), 0.08)}
+              {renderSideTable("sell", SELL_ORDER, "var(--red)", "rgba(239,68,68,0.06)", t("groupSell"), 0.16)}
+            </div>
           )}
         </div>
       </section>
