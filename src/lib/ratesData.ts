@@ -73,6 +73,7 @@ export function buildMockRates(
         transferRate: null,
         updatedAt: new Date().toISOString(),
         date,
+        source: "estimated" as const,
       });
     }
   }
@@ -118,6 +119,7 @@ export async function fetchVCBRates(date: string): Promise<ExchangeRate[]> {
       transferRate: parse(item.transfer),
       updatedAt: json.UpdatedDate ?? new Date().toISOString(),
       date,
+      source: "live" as const,
     }));
 
     return rates.length > 0 ? rates : buildMockRates(date).filter((r) => r.bankCode === "VCB");

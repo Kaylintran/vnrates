@@ -2,6 +2,7 @@
   "nav": {
     "rates": "匯率",
     "blackMarket": "黑市",
+    "crypto": "USDT P2P",
     "converter": "換匯",
     "news": "新聞",
     "viewRates": "查看匯率 →"
@@ -53,7 +54,8 @@
     "days14": "14天",
     "days30": "30天",
     "chartBuy": "買入",
-    "chartSell": "賣出"
+    "chartSell": "賣出",
+    "estimatedNote": "~ 基於VCB實際匯率的估算數據"
   },
   "dashboard": {
     "label": "全面比較",
@@ -63,7 +65,8 @@
     "colBank": "銀行",
     "best": "最優",
     "tabAll": "全部",
-    "tabOther": "其他"
+    "tabOther": "其他",
+    "estimatedNote": "~ 基於VCB實際匯率的估算數據"
   },
   "converter": {
     "label": "工具",
@@ -165,5 +168,25 @@
     "CAD": "加拿大元",
     "CHF": "瑞士法郎",
     "VND": "越南盾"
+  },
+  "crypto": {
+    "label": "加密貨幣",
+    "title1": "USDT P2P",
+    "title2": "匯率。",
+    "desc": "幣安 P2P 上的即時 USDT 買賣價格，每天更新兩次，並與越南外貿銀行（Vietcombank）官方美元賣出匯率比較。",
+    "warning": "⚠ 資料來自幣安公開的 P2P 廣告，僅供參考。實際成交價格可能因買賣雙方而異。",
+    "tableTitle": "USDT P2P 價格歷史",
+    "ratioNote": "比率 = USDT 價格 ÷ Vietcombank 美元賣出匯率。變動百分比相對於上一次更新。",
+    "loading": "資料載入中…",
+    "noData": "暫無資料，請稍後再查看。",
+    "colTime": "時間",
+    "groupBuy": "買入 (VNĐ)",
+    "groupSell": "賣出 (VNĐ)",
+    "colLow": "最低",
+    "colModerate": "中位數",
+    "colHigh": "最高",
+    "colAverage": "平均",
+    "colRatio": "比率",
+    "colVariance": "變動率"
   }
 }

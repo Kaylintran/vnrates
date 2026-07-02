@@ -20,6 +20,7 @@ export default function Header() {
   const navLinks = [
     { href: "/rates" as const, label: t("rates") },
     { href: "/black-market" as const, label: t("blackMarket") },
+    { href: "/crypto" as const, label: t("crypto") },
     { href: "/converter" as const, label: t("converter") },
     { href: "/news" as const, label: t("news") },
   ];
@@ -33,7 +34,7 @@ export default function Header() {
         borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between relative">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <span
@@ -48,13 +49,13 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        {/* Desktop nav — centered absolutely */}
+        <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm transition-colors"
+              className="text-base font-medium transition-colors"
               style={{ color: "var(--text-2)" }}
               onMouseEnter={(e) =>
                 ((e.currentTarget as HTMLAnchorElement).style.color = "var(--text)")
