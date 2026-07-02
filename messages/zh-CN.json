@@ -173,7 +173,7 @@
     "label": "加密货币",
     "title1": "USDT P2P",
     "title2": "汇率。",
-    "desc": "币安 P2P 上的实时 USDT 买卖价格，每天更新两次，并与越南外贸银行（Vietcombank）官方美元卖出汇率对比。",
+    "desc": "币安 P2P 上的实时 USDT 买卖价格，每天更新，并与越南外贸银行（Vietcombank）官方美元卖出汇率对比。",
     "warning": "⚠ 数据来自币安公开的 P2P 广告，仅供参考。实际成交价格可能因买卖双方而异。",
     "tableTitle": "USDT P2P 价格历史",
     "ratioNote": "比率 = USDT 价格 ÷ Vietcombank 美元卖出汇率。变动百分比相对于上一次更新。",

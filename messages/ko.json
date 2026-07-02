@@ -173,7 +173,7 @@
     "label": "암호화폐",
     "title1": "USDT P2P",
     "title2": "환율.",
-    "desc": "바이낸스 P2P의 실제 USDT 매수/매도 가격, 하루 2회 업데이트. Vietcombank 공식 USD 매도 환율과 비교합니다.",
+    "desc": "바이낸스 P2P의 실제 USDT 매수/매도 가격, 매일 업데이트. Vietcombank 공식 USD 매도 환율과 비교합니다.",
     "warning": "⚠ 바이낸스의 공개 P2P 광고에서 가져온 데이터로 참고용입니다. 실제 거래 가격은 판매자/구매자에 따라 다를 수 있습니다.",
     "tableTitle": "USDT P2P 가격 이력",
     "ratioNote": "비율 = USDT 가격 ÷ Vietcombank USD 매도 환율. 변동률은 이전 업데이트 대비입니다.",
