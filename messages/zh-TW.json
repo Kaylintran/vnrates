@@ -177,6 +177,8 @@
     "warning": "⚠ 資料來自幣安公開的 P2P 廣告，僅供參考。實際成交價格可能因買賣雙方而異。",
     "tableTitle": "USDT P2P 價格歷史",
     "ratioNote": "比率 = USDT 價格 ÷ Vietcombank 澳元賣出匯率。變動百分比相對於上一次更新。",
+    "dateLabel": "依日期查看",
+    "dateLatest": "最新",
     "loading": "資料載入中…",
     "noData": "暫無資料，請稍後再查看。",
     "colTime": "時間",

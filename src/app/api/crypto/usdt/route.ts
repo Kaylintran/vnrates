@@ -1,5 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+
+const SELECT_COLUMNS =
+  "collected_at, buy_low, buy_moderate, buy_high, buy_avg, sell_low, sell_moderate, sell_high, sell_avg, vcb_aud_rate";
 
 interface SnapshotRow {
   collected_at: string;
@@ -23,21 +26,39 @@ function ratioFor(row: SnapshotRow, side: "buy" | "sell", key: StatKey): number 
   return price / row.vcb_aud_rate;
 }
 
-export async function GET() {
-  const { data, error } = await supabase
-    .from("usdt_p2p_snapshots")
-    .select("collected_at, buy_low, buy_moderate, buy_high, buy_avg, sell_low, sell_moderate, sell_high, sell_avg, vcb_aud_rate")
-    .order("collected_at", { ascending: false })
-    .limit(8);
+export async function GET(req: NextRequest) {
+  const dateParam = req.nextUrl.searchParams.get("date"); // YYYY-MM-DD, Vietnam calendar day
+
+  let priorRow: SnapshotRow | null = null;
+  let query = supabase.from("usdt_p2p_snapshots").select(SELECT_COLUMNS).order("collected_at", { ascending: false });
+
+  if (dateParam) {
+    const startUtc = new Date(`${dateParam}T00:00:00+07:00`).toISOString();
+    const endUtc = new Date(`${dateParam}T23:59:59.999+07:00`).toISOString();
+    query = query.gte("collected_at", startUtc).lte("collected_at", endUtc);
+
+    const { data: priorData } = await supabase
+      .from("usdt_p2p_snapshots")
+      .select(SELECT_COLUMNS)
+      .lt("collected_at", startUtc)
+      .order("collected_at", { ascending: false })
+      .limit(1);
+    priorRow = (priorData?.[0] as SnapshotRow) ?? null;
+  } else {
+    query = query.limit(8);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
   const rows = (data ?? []) as SnapshotRow[];
+  const rowsWithPrior = priorRow ? [...rows, priorRow] : rows;
 
   const result = rows.map((row, i) => {
-    const prevRow = rows[i + 1];
+    const prevRow = rowsWithPrior[i + 1];
 
     const buildSide = (side: "buy" | "sell") => {
       const stats: Record<StatKey, number | null> = { low: row[`${side}_low`], moderate: row[`${side}_moderate`], high: row[`${side}_high`], avg: row[`${side}_avg`] };

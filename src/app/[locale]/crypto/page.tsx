@@ -37,18 +37,23 @@ function fmtVariance(n: number | null): { text: string; color: string } {
   };
 }
 
+const TODAY_VN = () => new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
+
 export default function CryptoPage() {
   const t = useTranslations("crypto");
   const locale = useLocale();
   const [rows, setRows] = useState<SnapshotRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState("");
 
   useEffect(() => {
-    fetch("/api/crypto/usdt")
+    setLoading(true);
+    const url = selectedDate ? `/api/crypto/usdt?date=${selectedDate}` : "/api/crypto/usdt";
+    fetch(url)
       .then((r) => r.json())
       .then((d) => setRows(d.rows ?? []))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedDate]);
 
   const statLabel: Record<(typeof BUY_ORDER)[number], string> = {
     low: t("colLow"),
@@ -81,7 +86,7 @@ export default function CryptoPage() {
         <div className="rounded-2xl border overflow-x-auto" style={{ borderColor: "var(--border)" }}>
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ backgroundColor: tint }}>
+              <tr className="sticky top-16 z-10" style={{ backgroundColor: tint }}>
                 <th
                   className="text-left px-2 py-3 text-[11px] uppercase tracking-wide font-medium whitespace-nowrap"
                   style={{ color: "var(--text-3)" }}
@@ -184,10 +189,36 @@ export default function CryptoPage() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn>
-            <h2 className="text-xl font-semibold mb-1" style={{ color: "var(--text)" }}>
-              {t("tableTitle")}
-            </h2>
-            <p className="text-xs mb-6" style={{ color: "var(--text-3)" }}>{t("ratioNote")}</p>
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
+              <div>
+                <h2 className="text-xl font-semibold" style={{ color: "var(--text)" }}>
+                  {t("tableTitle")}
+                </h2>
+                <p className="text-xs mt-1" style={{ color: "var(--text-3)" }}>{t("ratioNote")}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs uppercase tracking-wide" style={{ color: "var(--text-3)" }}>
+                  {t("dateLabel")}
+                </label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  max={TODAY_VN()}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="rounded-lg border px-3 py-2 text-sm outline-none"
+                  style={{ backgroundColor: "var(--surface)", borderColor: "var(--border)", color: "var(--text)" }}
+                />
+                {selectedDate && (
+                  <button
+                    onClick={() => setSelectedDate("")}
+                    className="text-xs px-3 py-2 rounded-lg border transition-colors"
+                    style={{ borderColor: "var(--border)", color: "var(--text-2)" }}
+                  >
+                    {t("dateLatest")}
+                  </button>
+                )}
+              </div>
+            </div>
           </FadeIn>
 
           {loading ? (
@@ -196,8 +227,8 @@ export default function CryptoPage() {
             <p className="text-sm" style={{ color: "var(--text-3)" }}>{t("noData")}</p>
           ) : (
             <div className="space-y-8">
-              {renderSideTable("buy", BUY_ORDER, "var(--green)", "rgba(34,197,94,0.06)", t("groupBuy"), 0.08)}
-              {renderSideTable("sell", SELL_ORDER, "var(--red)", "rgba(239,68,68,0.06)", t("groupSell"), 0.16)}
+              {renderSideTable("buy", BUY_ORDER, "var(--green)", "#0b150f", t("groupBuy"), 0.08)}
+              {renderSideTable("sell", SELL_ORDER, "var(--red)", "#180d0d", t("groupSell"), 0.16)}
             </div>
           )}
         </div>
