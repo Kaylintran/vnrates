@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { AlertTriangle } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
+import DatePicker from "@/components/ui/DatePicker";
 import { fmtRate } from "@/lib/utils";
 import CTASection from "@/components/sections/CTASection";
 
@@ -200,14 +201,7 @@ export default function CryptoPage() {
                 <label className="text-xs uppercase tracking-wide" style={{ color: "var(--text-3)" }}>
                   {t("dateLabel")}
                 </label>
-                <input
-                  type="date"
-                  value={selectedDate}
-                  max={TODAY_VN()}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                  className="rounded-lg border px-3 py-2 text-sm outline-none"
-                  style={{ backgroundColor: "var(--surface)", borderColor: "var(--border)", color: "var(--text)" }}
-                />
+                <DatePicker value={selectedDate} onChange={setSelectedDate} max={TODAY_VN()} />
                 {selectedDate && (
                   <button
                     onClick={() => setSelectedDate("")}
