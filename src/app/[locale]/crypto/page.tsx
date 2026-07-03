@@ -83,21 +83,21 @@ export default function CryptoPage() {
         <h3 className="text-sm font-medium mb-3" style={{ color }}>
           {groupLabel}
         </h3>
-        <div className="rounded-2xl border overflow-x-auto" style={{ borderColor: "var(--border)" }}>
+        <div className="rounded-2xl border overflow-auto max-h-[420px]" style={{ borderColor: "var(--border)" }}>
           <table className="w-full text-sm">
             <thead>
-              <tr className="sticky top-16 z-10" style={{ backgroundColor: tint }}>
+              <tr>
                 <th
-                  className="text-left px-2 py-3 text-[11px] uppercase tracking-wide font-medium whitespace-nowrap"
-                  style={{ color: "var(--text-3)" }}
+                  className="sticky top-0 z-10 text-left px-2 py-3 text-[11px] uppercase tracking-wide font-medium whitespace-nowrap"
+                  style={{ color: "var(--text-3)", backgroundColor: tint }}
                 >
                   {t("colTime")}
                 </th>
                 {order.map((key) => (
                   <th
                     key={`price-${key}`}
-                    className="text-right px-2 py-3 text-[11px] uppercase tracking-wide font-medium"
-                    style={{ color }}
+                    className="sticky top-0 z-10 text-right px-2 py-3 text-[11px] uppercase tracking-wide font-medium"
+                    style={{ color, backgroundColor: tint }}
                   >
                     {statLabel[key]}
                   </th>
@@ -105,8 +105,8 @@ export default function CryptoPage() {
                 {order.map((key) => (
                   <th
                     key={`ratio-${key}`}
-                    className="text-right px-2 py-3 text-[11px] uppercase tracking-wide font-medium leading-tight"
-                    style={{ color: "var(--text-3)" }}
+                    className="sticky top-0 z-10 text-right px-2 py-3 text-[11px] uppercase tracking-wide font-medium leading-tight"
+                    style={{ color: "var(--text-3)", backgroundColor: tint }}
                   >
                     {t("colRatio")} {statLabel[key]}
                   </th>
