@@ -173,7 +173,7 @@
     "label": "加密貨幣",
     "title1": "USDT P2P",
     "title2": "匯率。",
-    "desc": "幣安 P2P 上的即時 USDT 買賣價格，每天更新，並與越南外貿銀行（Vietcombank）官方澳元賣出匯率比較。",
+    "desc": "幣安 P2P 上的即時 USDT 買賣價格，每天更新三次，並與越南外貿銀行（Vietcombank）官方澳元賣出匯率比較。",
     "warning": "⚠ 資料來自幣安公開的 P2P 廣告，僅供參考。實際成交價格可能因買賣雙方而異。",
     "tableTitle": "USDT P2P 價格歷史",
     "ratioNote": "比率 = USDT 價格 ÷ Vietcombank 澳元賣出匯率。變動百分比相對於上一次更新。",
