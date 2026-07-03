@@ -97,8 +97,31 @@ async function fetchP2PAdPrices(tradeType: "BUY" | "SELL"): Promise<number[]> {
   return prices;
 }
 
+function quantile(sorted: number[], q: number): number {
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  return sorted[base + 1] !== undefined
+    ? sorted[base] + rest * (sorted[base + 1] - sorted[base])
+    : sorted[base];
+}
+
+// Drops ads whose price sits far outside the bulk of the market (classic
+// IQR fence, x1.5) — a merchant can still meet the verification + minimum
+// trade-size filters above while listing a stale or mispriced ad.
+function removeOutliers(sorted: number[]): number[] {
+  if (sorted.length < 4) return sorted; // too few points for a meaningful quartile split
+  const q1 = quantile(sorted, 0.25);
+  const q3 = quantile(sorted, 0.75);
+  const iqr = q3 - q1;
+  const lower = q1 - 1.5 * iqr;
+  const upper = q3 + 1.5 * iqr;
+  const filtered = sorted.filter((p) => p >= lower && p <= upper);
+  return filtered.length > 0 ? filtered : sorted;
+}
+
 function computeStats(prices: number[]): P2PStats {
-  const sorted = [...prices].sort((a, b) => a - b);
+  const sorted = removeOutliers([...prices].sort((a, b) => a - b));
   const mid = Math.floor(sorted.length / 2);
   const moderate =
     sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
