@@ -177,6 +177,8 @@
     "warning": "⚠ Dữ liệu lấy từ quảng cáo P2P công khai trên Binance, chỉ mang tính tham khảo. Giá giao dịch thực tế có thể khác tùy người mua/bán.",
     "tableTitle": "Lịch sử giá USDT P2P",
     "ratioNote": "Tỷ lệ = Giá USDT ÷ Tỷ giá bán AUD của Vietcombank. Biến động % so với lần cập nhật trước.",
+    "dateLabel": "Xem theo ngày",
+    "dateLatest": "Mới nhất",
     "loading": "Đang tải dữ liệu…",
     "noData": "Chưa có dữ liệu. Vui lòng quay lại sau.",
     "colTime": "Thời gian",
