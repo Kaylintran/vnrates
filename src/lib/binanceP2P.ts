@@ -24,6 +24,11 @@ const BATCH_SIZE = 4; // pages fetched concurrently at a time — full paralleli
 const BATCH_DELAY_MS = 300;
 const RETRY_DELAYS_MS = [500, 1500]; // backoff schedule for 429s
 
+// Only count ads from verified Binance merchants, and only ads that require a
+// minimum single-transaction size of at least this amount — filters out
+// small, unverified individual listings that skew the price stats.
+const MIN_SINGLE_TRANS_AMOUNT_VND = 90_000_000;
+
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -44,7 +49,7 @@ async function fetchP2PAdPage(tradeType: "BUY" | "SELL", page: number): Promise<
         page,
         rows: ROWS_PER_PAGE,
         payTypes: [],
-        publisherType: null,
+        publisherType: "merchant",
       }),
     });
 
@@ -55,14 +60,17 @@ async function fetchP2PAdPage(tradeType: "BUY" | "SELL", page: number): Promise<
     if (!res.ok) throw new Error(`Binance P2P API error: ${res.status}`);
 
     const json = (await res.json()) as {
-      data?: Array<{ adv: { price: string } }>;
+      data?: Array<{ adv: { price: string; minSingleTransAmount: string } }>;
       total?: number;
     };
 
     const prices = (json.data ?? [])
+      .filter((item) => parseFloat(item.adv.minSingleTransAmount) >= MIN_SINGLE_TRANS_AMOUNT_VND)
       .map((item) => parseFloat(item.adv.price))
       .filter((n) => !isNaN(n) && n > 0);
 
+    // `total` reflects the merchant-only count before the min-amount filter above,
+    // so it only bounds how many pages exist — it is not the final ad count.
     return { prices, total: json.total ?? prices.length };
   }
 }
