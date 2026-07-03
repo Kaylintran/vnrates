@@ -83,7 +83,7 @@ export default function CryptoPage() {
         <h3 className="text-sm font-medium mb-3" style={{ color }}>
           {groupLabel}
         </h3>
-        <div className="rounded-2xl border overflow-auto max-h-[420px]" style={{ borderColor: "var(--border)" }}>
+        <div className="rounded-2xl border overflow-auto max-h-[260px]" style={{ borderColor: "var(--border)" }}>
           <table className="w-full text-sm">
             <thead>
               <tr>
@@ -226,7 +226,7 @@ export default function CryptoPage() {
           ) : rows.length === 0 ? (
             <p className="text-sm" style={{ color: "var(--text-3)" }}>{t("noData")}</p>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-5">
               {renderSideTable("buy", BUY_ORDER, "var(--green)", "#0b150f", t("groupBuy"), 0.08)}
               {renderSideTable("sell", SELL_ORDER, "var(--red)", "#180d0d", t("groupSell"), 0.16)}
             </div>

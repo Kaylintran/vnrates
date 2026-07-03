@@ -35,8 +35,8 @@ export async function generateMetadata({
   const { locale } = await params;
   return {
     title: {
-      template: "%s | Vnrates",
-      default: titles[locale] ?? "Vnrates",
+      template: "%s | Rateviet",
+      default: titles[locale] ?? "Rateviet",
     },
     description:
       "Tỷ giá ngoại tệ từ 10+ ngân hàng Việt Nam. Cập nhật hàng ngày.",
