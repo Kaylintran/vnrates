@@ -173,7 +173,7 @@
     "label": "Tiền số",
     "title1": "Tỷ giá",
     "title2": "USDT P2P.",
-    "desc": "Giá mua/bán USDT thực tế trên Binance P2P, cập nhật hàng ngày. Đối chiếu với tỷ giá bán AUD chính thức của Vietcombank.",
+    "desc": "Giá mua/bán USDT thực tế trên Binance P2P, cập nhật 3 lần mỗi ngày. Đối chiếu với tỷ giá bán AUD chính thức của Vietcombank.",
     "warning": "⚠ Dữ liệu lấy từ quảng cáo P2P công khai trên Binance, chỉ mang tính tham khảo. Giá giao dịch thực tế có thể khác tùy người mua/bán.",
     "tableTitle": "Lịch sử giá USDT P2P",
     "ratioNote": "Tỷ lệ = Giá USDT ÷ Tỷ giá bán AUD của Vietcombank. Biến động % so với lần cập nhật trước.",
