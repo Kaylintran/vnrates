@@ -39,7 +39,7 @@ export default function Footer() {
             {t("about")}
           </Link>
           <span className="text-xs" style={{ color: "var(--text-3)" }}>
-            © {new Date().getFullYear()} Vnrates
+            © {new Date().getFullYear()} Rateviet
           </span>
         </div>
       </div>
