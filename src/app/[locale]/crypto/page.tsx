@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Info } from "lucide-react";
 import FadeIn from "@/components/ui/FadeIn";
 import DatePicker from "@/components/ui/DatePicker";
 import { fmtRate } from "@/lib/utils";
@@ -69,6 +69,7 @@ export default function CryptoPage() {
       month: "2-digit",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Asia/Ho_Chi_Minh",
     }).format(new Date(iso));
 
   function renderSideTable(
@@ -183,6 +184,17 @@ export default function CryptoPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex gap-3 items-start">
           <AlertTriangle size={16} className="shrink-0 mt-0.5" style={{ color: "var(--red)" }} />
           <p className="text-xs leading-relaxed" style={{ color: "var(--text-2)" }}>{t("warning")}</p>
+        </div>
+      </div>
+
+      {/* Legend: what Mua vào / Bán ra mean */}
+      <div className="border-b" style={{ borderColor: "rgba(59,130,246,0.2)", backgroundColor: "rgba(59,130,246,0.05)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex gap-3 items-start">
+          <Info size={16} className="shrink-0 mt-0.5" style={{ color: "var(--blue)" }} />
+          <ul className="text-xs leading-relaxed space-y-1" style={{ color: "var(--text-2)" }}>
+            <li>{t("legendBuy")}</li>
+            <li>{t("legendSell")}</li>
+          </ul>
         </div>
       </div>
 
